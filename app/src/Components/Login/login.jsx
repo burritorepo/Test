@@ -15,9 +15,11 @@ class Login extends Component {
         this.state = {
             username: '',
             orderID: '123',
-            userType: ''
+            userType: '',
+            isDone: false
         }
         this.handleChange = this.handleChange.bind(this);
+        this.hacerMagia = this.hacerMagia.bind(this);
     }
 
     handleChange(e) {
@@ -30,14 +32,28 @@ class Login extends Component {
         });
     }
 
+    hacerMagia() {
+        this.setState({ isDone: true });
+    };
+
     render() {
+        const isDone = this.state.isDone;
+        let map;
+
+        if (isDone) {
+            map = <MapLayout {...this.state} />;
+        };
+
         return (
             <div>
                 <div className="row">
                     <UIinput name="username" value={this.state.username} label="First Name" onChange={this.handleChange}></UIinput>
                 </div>
                 <div><UIselect id='2' placeholder="Holder" name="userType" className="select" value={this.state.userType} onChange={this.handleChange} options={[{ key: 'client', value: 'client' }, { key: 'driver', value: 'driver' }]} /></div>
-                <MapLayout {...this.state} />
+                <button onClick={this.hacerMagia}>
+                    Hacer Magia!
+                </button>
+                {map}
             </div>
         )
     }
