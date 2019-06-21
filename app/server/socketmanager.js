@@ -2,6 +2,7 @@ let active = false;
 let update = false;
 let usersConnected = [];
 let roomCurrent = null;
+
 module.exports = function (socket) {
 
     console.log('New User');
@@ -22,6 +23,9 @@ module.exports = function (socket) {
     // Add New User to Users Array
     socket.on('add user', (userProfile) => {
         console.log('llego este', userProfile);
+
+        socket.username = userProfile.username;
+        console.log('jugada socket', socket.username);
 
         let new_user = {
             username: userProfile.username,
@@ -50,7 +54,7 @@ module.exports = function (socket) {
         console.log(usersFiltered);
     });
 
-    
+
     // New User sends coords and changes their profile
     socket.on('new_coords', data => {
         console.log('CLIENT', data);
@@ -98,7 +102,30 @@ module.exports = function (socket) {
         }
     });
 
+    socket.on('disconnect', () => {
 
+        console.log('USER HAS DISCONNECTED');
+
+        for (let i = 0; i < usersConnected.length; i++)
+            if (usersConnected[i].username === socket.username) {
+                socket.broadcast.emit('remove_marker', {
+                    username: usersConnected[i].username
+                });
+                usersConnected.splice(i, 1);
+                break;
+            }
+        let new_count = usersConnected.length;
+        console.log(new_count);
+        console.log('remove marker');
+    });
+
+    socket.on('leave room', data => {
+        console.log('leaving room');
+        console.log(data);
+        socket.leave(data.room)
+    });
+
+    console.log('current', usersConnected);
 }
 
 
